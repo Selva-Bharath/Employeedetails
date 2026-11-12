@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: hr_postgres_prod
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-onboarding_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMeInProduction123!}
+    volumes:
+      - hr_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-onboarding_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hr_prod_net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hr_backend_prod
+    restart: always
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-prod-secret-key-change-me-2026}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-prod-jwt-secret-key-change-me-2026}
+      DATA_ENCRYPTION_KEY: ${DATA_ENCRYPTION_KEY:-prod-encryption-token-2026}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-ChangeMeInProduction123!}@postgres:5432/${POSTGRES_DB:-onboarding_db}
+      UPLOAD_FOLDER: /app/uploads
+    volumes:
+      - ./uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - hr_prod_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: hr_frontend_prod
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - hr_prod_net
+
+networks:
+  hr_prod_net:
+    driver: bridge
+
+volumes:
+  hr_postgres_data:
+

@@ -1,0 +1,62 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: hr_onboarding_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: onboarding_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5436:5432"
+    volumes:
+      - hr_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d onboarding_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hr_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hr_onboarding_backend
+    restart: unless-stopped
+    environment:
+      SECRET_KEY: enterprise-secret-key-prod-2026
+      JWT_SECRET_KEY: enterprise-jwt-secret-key-2026
+      DATABASE_URL: postgresql://postgres:postgrespassword@postgres:5432/onboarding_db
+      UPLOAD_FOLDER: /app/uploads
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - hr_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: hr_onboarding_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - hr_network
+
+networks:
+  hr_network:
+    driver: bridge
+
+volumes:
+  hr_postgres_data:
+
