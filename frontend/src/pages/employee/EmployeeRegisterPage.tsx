@@ -365,19 +365,20 @@ export const EmployeeRegisterPage: React.FC = () => {
           </div>
         )}
 
-        {/* Step Progress Bar */}
-        <div className="mb-8 overflow-x-auto pb-2">
-          <div className="flex items-center justify-between min-w-[650px] relative">
+        {/* Step Progress Bar (Responsive horizontal scroll on mobile with touch snapping) */}
+        <div className="mb-6 overflow-x-auto pb-3 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="flex items-center justify-between min-w-[580px] sm:min-w-full relative px-2">
             <div className="absolute top-4 left-6 right-6 h-0.5 bg-neutral-800 -z-0" />
             {stepsList.map((st) => {
               const Icon = st.icon;
               const isPast = st.num < currentStep;
               const isCurrent = st.num === currentStep;
               return (
-                <div key={st.num} className="flex flex-col items-center relative z-10">
+                <div key={st.num} className="flex flex-col items-center relative z-10 shrink-0">
                   <button
+                    type="button"
                     onClick={() => setCurrentStep(st.num)}
-                    className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition ${
+                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold text-xs transition ${
                       isCurrent
                         ? 'bg-white text-black ring-4 ring-neutral-800'
                         : isPast
@@ -385,9 +386,9 @@ export const EmployeeRegisterPage: React.FC = () => {
                         : 'bg-neutral-900 border border-neutral-700 text-neutral-500'
                     }`}
                   >
-                    {isPast ? <Check className="w-4 h-4 text-emerald-400" /> : st.num}
+                    {isPast ? <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" /> : st.num}
                   </button>
-                  <span className={`text-[11px] mt-1.5 font-medium ${isCurrent ? 'text-white' : 'text-neutral-400'}`}>
+                  <span className={`text-[10px] sm:text-[11px] mt-1.5 font-medium tracking-tight ${isCurrent ? 'text-white' : 'text-neutral-400'}`}>
                     {st.label}
                   </span>
                 </div>
@@ -1171,24 +1172,24 @@ export const EmployeeRegisterPage: React.FC = () => {
           )}
 
           {/* Bottom Navigation Buttons */}
-          <div className="flex items-center justify-between pt-6 mt-6 border-t border-neutral-800">
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 mt-6 border-t border-neutral-800">
             {currentStep > 1 ? (
               <button
                 type="button"
                 onClick={handlePrevStep}
-                className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition"
+                className="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Previous Step</span>
               </button>
-            ) : <div />}
+            ) : <div className="hidden sm:block" />}
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
               <button
                 type="button"
                 disabled={saveLoading}
                 onClick={() => saveProgress(currentStep)}
-                className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold rounded-lg transition"
+                className="flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold rounded-lg transition"
               >
                 {saveLoading ? 'Saving...' : 'Save Draft'}
               </button>
@@ -1197,7 +1198,7 @@ export const EmployeeRegisterPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleNextStep}
-                  className="px-5 py-2 bg-white text-black font-semibold text-xs rounded-lg hover:bg-neutral-200 flex items-center gap-1.5 transition active:scale-[0.98]"
+                  className="flex-1 sm:flex-initial px-5 py-2.5 sm:py-2 bg-white text-black font-semibold text-xs rounded-lg hover:bg-neutral-200 flex items-center justify-center gap-1.5 transition active:scale-[0.98]"
                 >
                   <span>Continue</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -1207,7 +1208,7 @@ export const EmployeeRegisterPage: React.FC = () => {
                   type="button"
                   disabled={saveLoading || !declarationChecked}
                   onClick={handleFinalSubmit}
-                  className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs rounded-lg flex items-center gap-1.5 transition shadow-lg shadow-emerald-950 disabled:opacity-50"
+                  className="flex-1 sm:flex-initial px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs rounded-lg flex items-center justify-center gap-1.5 transition shadow-lg shadow-emerald-950 disabled:opacity-50"
                 >
                   {saveLoading ? (
                     'Submitting...'
